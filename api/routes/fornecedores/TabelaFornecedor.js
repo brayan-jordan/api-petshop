@@ -30,5 +30,13 @@ module.exports = {
                 where: { id: id }
             }
         )
+    },
+
+    async remover (id) {
+        return await ModeloTabela.destroy({
+            where: {
+                id: id
+            }
+        })
     }
 }
