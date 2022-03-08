@@ -3,7 +3,6 @@ const TabelaFornecedor = require('./TabelaFornecedor')
 const Fornecedor = require('./Fornecedor')
 const SerializadorFornecedor = require('../../Serializador').SerializadorFornecedor
 
-
 roteador.get('/', async(req, res) => {
     const resultados = await TabelaFornecedor.listar()
     res.status(200)
@@ -72,5 +71,9 @@ roteador.delete('/:idFornecedor', async (req, res, proximo) => {
         proximo(err)
     }
 })
+
+// Chamando o index.js dos produtos que sao uma classe dentro dos fornecedores (possibilitando o uso de suas rotas)
+const roteadorProdutos = require('./produtos')
+roteador.use('/:idFornecedor/produtos', roteadorProdutos)
 
 module.exports = roteador
