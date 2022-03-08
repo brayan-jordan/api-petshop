@@ -25,6 +25,10 @@ class Produto {
         this.dataAtualizacao = resultado.dataAtualizacao
         this.versao = resultado.versao
     }
+
+    remover() {
+        return TabelaProduto.deletar(this.id, this.fornecedor)
+    }
 }
 
 module.exports = Produto
