@@ -74,6 +74,23 @@ roteador.delete('/:idFornecedor', async (req, res, proximo) => {
 
 // Chamando o index.js dos produtos que sao uma classe dentro dos fornecedores (possibilitando o uso de suas rotas)
 const roteadorProdutos = require('./produtos')
-roteador.use('/:idFornecedor/produtos', roteadorProdutos)
+
+// Middleware para verificar se fornecedor existe em todas as rotas de produtos que necessitam existir um fornecedor
+// para conseguir usar suas funcionalidades (evitando erros de uma forma mais pratica)
+const verificarFornecedor = async (req, res, proximo) => {
+    try {
+        const id = req.params.idFornecedor
+        const fornecedor = new Fornecedor({ id: id })
+        await fornecedor.buscar()
+        req.fornecedor = fornecedor
+        proximo()
+    } catch (err) {
+        proximo(err)
+    }
+}
+
+// Verifica fornecedor (SEGUNDO PARAMETRO), e conhecido como um middleware que vai ser utilizado em todas as rotas desse roteador.use
+// antes de ir para a rota escolhida dentro de roteador produtos, isso porque esse middleware esta passando primeiro como parametro
+roteador.use('/:idFornecedor/produtos', verificarFornecedor, roteadorProdutos)
 
 module.exports = roteador

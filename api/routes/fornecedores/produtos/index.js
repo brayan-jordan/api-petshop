@@ -5,7 +5,7 @@ const TabelaProduto = require('./TabelaProduto')
 const Produto = require('./Produto')
 
 roteador.get('/', async (req, res) => {
-    const produtos = await TabelaProduto.listar(req.params.idFornecedor)
+    const produtos = await TabelaProduto.listar(req.fornecedor.id)
     res.send(
         JSON.stringify(produtos)
     )
@@ -13,7 +13,7 @@ roteador.get('/', async (req, res) => {
 
 roteador.post('/', async (req, res, proximo) => {
     try {
-        const idFornecedor = req.params.idFornecedor
+        const idFornecedor = req.fornecedor.id
         const corpo = req.body
         const dados = Object.assign({}, corpo, {fornecedor: idFornecedor})
         const produto = new Produto(dados)
@@ -28,7 +28,7 @@ roteador.post('/', async (req, res, proximo) => {
 roteador.delete('/:idProduto', async (req, res) => {
     const dados = {
         id: req.params.idProduto,
-        fornecedor: req.params.idFornecedor
+        fornecedor: req.fornecedor.id
     }
 
     const produto = new Produto(dados)
