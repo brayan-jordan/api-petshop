@@ -3,7 +3,6 @@
 const roteador = require('express').Router({ mergeParams: true })
 const TabelaProduto = require('./TabelaProduto')
 const Produto = require('./Produto')
-const { Json } = require('sequelize/types/utils')
 
 roteador.get('/', async (req, res) => {
     const produtos = await TabelaProduto.listar(req.fornecedor.id)
