@@ -3,6 +3,7 @@
 const roteador = require('express').Router({ mergeParams: true })
 const TabelaProduto = require('./TabelaProduto')
 const Produto = require('./Produto')
+const { Json } = require('sequelize/types/utils')
 
 roteador.get('/', async (req, res) => {
     const produtos = await TabelaProduto.listar(req.fornecedor.id)
@@ -35,6 +36,21 @@ roteador.delete('/:idProduto', async (req, res) => {
     await produto.remover()
     res.status(204)
     res.end()
+})
+
+roteador.get('/:idProduto', async (req, res, proximo) => {
+    try {
+        const dados = {
+            id: req.params.idProduto,
+            fornecedor: req.fornecedor.id
+        }
+    
+        const produto = new Produto(dados)
+        await produto.carregar()
+        res.send(JSON.stringify(produto))
+    } catch (err) {
+        proximo(err)
+    }
 })
 
 module.exports = roteador

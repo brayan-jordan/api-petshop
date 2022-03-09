@@ -40,6 +40,16 @@ class Produto {
     remover() {
         return TabelaProduto.deletar(this.id, this.fornecedor)
     }
+
+    async carregar() {
+        const produto = TabelaProduto.buscarPorId(this.id, this.fornecedor)
+        this.titulo = produto.titulo
+        this.preco = produto.preco
+        this.estoque = produto.estoque
+        this.dataCriacao = produto.dataCriacao
+        this.dataAtualizacao = produto.dataAtualizacao
+        this.versao = produto.versao
+    }
 }
 
 module.exports = Produto
