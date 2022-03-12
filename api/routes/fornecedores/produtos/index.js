@@ -63,4 +63,41 @@ roteador.get('/:idProduto', async (req, res, proximo) => {
     }
 })
 
+roteador.put('/:idProduto', async (req, res, proximo) => {
+    try {
+        const dados = Object.assign(
+            {},
+            req.body,
+            {
+                id: req.params.idProduto,
+                fornecedor: req.fornecedor.id
+            }
+        )
+    
+        const produto = new Produto(dados)
+        await produto.atualizar()
+        res.status(204)
+        res.end()
+    } catch (err) {
+        proximo(err)
+    }
+})
+
+roteador.post('/:idProduto/diminuirEstoque', async (req, res, proximo) => {
+    try {
+        const produto = new Produto({
+            id: req.params.idProduto,
+            fornecedor: req.fornecedor.id
+        })
+    
+        await produto.carregar()
+        produto.estoque = produto.estoque - req.body.quantidade
+        await produto.diminuirEstoque()
+        res.status(204)
+        res.end()
+    } catch (err) {
+        proximo(err)
+    }
+})
+
 module.exports = roteador
