@@ -5,7 +5,9 @@ module.exports = {
         return ModeloTabelaProduto.findAll({
             where: {
                 fornecedor: idFornecedor
-            }
+            },
+            // Raw = true, faz com que retorne os dados em javascript puro, caso contrario retornaria como uma instancia do Sequelize `
+            raw: true
         })
     },
 
