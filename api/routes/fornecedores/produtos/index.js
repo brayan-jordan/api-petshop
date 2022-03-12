@@ -23,6 +23,10 @@ roteador.post('/', async (req, res, proximo) => {
         const produto = new Produto(dados)
         await produto.criar()
         res.status(201)
+        res.set('ETAG', produto.versao)
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('Last-Modified', timestamp)
+        res.set('Location', `/api/fornecedores/${produto.fornecedor}/produtos/${produto.id}`)
         const serializador = new Serializador(
             res.getHeader('Content-Type')
         )
@@ -57,6 +61,9 @@ roteador.get('/:idProduto', async (req, res, proximo) => {
             res.getHeader('Content-Type'),
             ['preco', 'estoque', 'fornecedor','dataCriacao', 'dataAtualizacao', 'versao']
         )
+        res.set('ETAG', produto.versao)
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('Last-Modified', timestamp)
         res.send(serializador.serializar(produto))
     } catch (err) {
         proximo(err)
@@ -76,6 +83,11 @@ roteador.put('/:idProduto', async (req, res, proximo) => {
     
         const produto = new Produto(dados)
         await produto.atualizar()
+        // Carregar serve diretamente para pegar a nova versao e mandar nos cabecalhos
+        await produto.carregar()
+        res.set('ETAG', produto.versao)
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('Last-Modified', timestamp)
         res.status(204)
         res.end()
     } catch (err) {
@@ -93,6 +105,11 @@ roteador.post('/:idProduto/diminuirEstoque', async (req, res, proximo) => {
         await produto.carregar()
         produto.estoque = produto.estoque - req.body.quantidade
         await produto.diminuirEstoque()
+        // Carregar serve diretamente para pegar a nova versao e mandar nos cabecalhos
+        await produto.carregar()
+        res.set('ETAG', produto.versao)
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('Last-Modified', timestamp)
         res.status(204)
         res.end()
     } catch (err) {
